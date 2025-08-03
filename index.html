@@ -8,40 +8,45 @@
         const code = params.get("code");
 
         const clientId = "7u4aik1atk0krdtfoc3cdoho1";
+        const clientSecret = "vgs8upk2nrqjs4oon7t5kbgv1t9oi1b87dki4j03rckghti36d";
         const redirectUri = "https://main.d30ywk39l19qcq.amplifyapp.com";
         const tokenUrl =
           "https://ap-southeast-1afuovmigj.auth.ap-southeast-1.amazoncognito.com/oauth2/token";
 
         if (!code) {
-          // Not logged in — redirect to login page
+          // Redirect to login if no code
           const loginUrl = `https://ap-southeast-1afuovmigj.auth.ap-southeast-1.amazoncognito.com/login?client_id=${clientId}&response_type=code&scope=openid+email+phone&redirect_uri=${redirectUri}`;
           window.location.href = loginUrl;
           return;
         }
 
         try {
+          const basicAuth = btoa(`${clientId}:${clientSecret}`);
           const response = await fetch(tokenUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
-              Authorization: "Basic " + btoa(`${clientId}:`), // No client secret
+              Authorization: `Basic ${basicAuth}`,
             },
-            body: `grant_type=authorization_code&client_id=${clientId}&code=${code}&redirect_uri=${redirectUri}`,
+            body: `grant_type=authorization_code&code=${code}&redirect_uri=${redirectUri}`,
           });
 
           const data = await response.json();
 
           if (data.id_token) {
             document.body.innerHTML = `
-              <h2>Login successful 🎉</h2>
-              <p>Your ID Token:</p>
-              <code style="word-break:break-all">${data.id_token}</code>
+              <h2>✅ Login Successful!</h2>
+              <p>ID Token:</p>
+              <code style="word-break: break-all;">${data.id_token}</code>
             `;
           } else {
-            document.body.innerHTML = `<h2>Login Failed</h2><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            document.body.innerHTML = `
+              <h2>⚠️ Login Failed</h2>
+              <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
           }
-        } catch (err) {
-          document.body.innerHTML = `<h2>Request Error</h2><pre>${err}</pre>`;
+        } catch (error) {
+          document.body.innerHTML = `<h2>❌ Error</h2><pre>${error}</pre>`;
         }
       }
 
@@ -49,6 +54,6 @@
     </script>
   </head>
   <body>
-    <p>Loading...</p>
+    <p>Authenticating with Cognito...</p>
   </body>
 </html>

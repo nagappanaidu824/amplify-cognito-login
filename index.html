@@ -1,21 +1,54 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Cognito Login Redirect</title>
+    <title>Cognito Redirect Handler</title>
     <script>
-      window.onload = () => {
-        const domain = "https://ap-southeast-1afuovmigj.auth.ap-southeast-1.amazoncognito.com";
-        const clientId = "7u4aik1atk0krdtfoc3cdoho1";
-        const redirectUri = "https://main.d30ywk39l19qcq.amplifyapp.com"; // Use placeholder now
-        const responseType = "code";
-        const scope = "openid+email+phone";
+      async function handleLoginRedirect() {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
 
-        const loginUrl = `${domain}/login?client_id=${clientId}&response_type=${responseType}&scope=${scope}&redirect_uri=${redirectUri}`;
-        window.location.href = loginUrl;
-      };
+        const clientId = "7u4aik1atk0krdtfoc3cdoho1";
+        const redirectUri = "https://main.d30ywk39l19qcq.amplifyapp.com";
+        const tokenUrl =
+          "https://ap-southeast-1afuovmigj.auth.ap-southeast-1.amazoncognito.com/oauth2/token";
+
+        if (!code) {
+          // Not logged in — redirect to login page
+          const loginUrl = `https://ap-southeast-1afuovmigj.auth.ap-southeast-1.amazoncognito.com/login?client_id=${clientId}&response_type=code&scope=openid+email+phone&redirect_uri=${redirectUri}`;
+          window.location.href = loginUrl;
+          return;
+        }
+
+        try {
+          const response = await fetch(tokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              Authorization: "Basic " + btoa(`${clientId}:`), // No client secret
+            },
+            body: `grant_type=authorization_code&client_id=${clientId}&code=${code}&redirect_uri=${redirectUri}`,
+          });
+
+          const data = await response.json();
+
+          if (data.id_token) {
+            document.body.innerHTML = `
+              <h2>Login successful 🎉</h2>
+              <p>Your ID Token:</p>
+              <code style="word-break:break-all">${data.id_token}</code>
+            `;
+          } else {
+            document.body.innerHTML = `<h2>Login Failed</h2><pre>${JSON.stringify(data, null, 2)}</pre>`;
+          }
+        } catch (err) {
+          document.body.innerHTML = `<h2>Request Error</h2><pre>${err}</pre>`;
+        }
+      }
+
+      window.onload = handleLoginRedirect;
     </script>
   </head>
   <body>
-    <p>Redirecting to Cognito login...</p>
+    <p>Loading...</p>
   </body>
 </html>

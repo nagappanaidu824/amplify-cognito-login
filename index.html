@@ -8,7 +8,7 @@
         const clientId = "7u4aik1atk0krdtfoc3cdoho1";
         const redirectUri = "https://main.d30ywk39l19qcq.amplifyapp.com"; // Use placeholder now
         const responseType = "code";
-        const scope = "openid email phone";
+        const scope = "openid+email+phone";
 
         const loginUrl = `${domain}/login?client_id=${clientId}&response_type=${responseType}&scope=${scope}&redirect_uri=${redirectUri}`;
         window.location.href = loginUrl;

@@ -11,9 +11,15 @@
     }
     img {
       width: 200px;
+      height: auto;
       margin: 10px;
       border-radius: 12px;
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    img:hover {
+      transform: scale(1.05);
     }
     button {
       padding: 10px 20px;
@@ -25,7 +31,6 @@
 <body>
 
 <script>
-  // Replace these with your actual Cognito values
   const domain = "https://ap-southeast-1afuovmigj.auth.ap-southeast-1.amazoncognito.com";
   const clientId = "7u4aik1atk0krdtfoc3cdoho1";
   const clientSecret = "vgs8upk2nrqjs4oon7t5kbgv1t9oi1b87dki4j03rckghti36d";
@@ -33,12 +38,18 @@
 
   function showGallery() {
     document.body.innerHTML = `
-      <h1>✅ Welcome to the Image Gallery!</h1>
-      <img src="https://via.placeholder.com/300x200/FF5733/FFFFFF?text=Image+1" alt="Image 1">
-      <img src="https://via.placeholder.com/300x200/33C1FF/FFFFFF?text=Image+2" alt="Image 2">
-      <img src="https://via.placeholder.com/300x200/28A745/FFFFFF?text=Image+3" alt="Image 3">
+      <h1>✅ <b>Welcome to the Image Gallery!</b></h1>
+      <a href="https://placekitten.com/800/600" target="_blank">
+        <img src="https://placekitten.com/300/200" alt="Image 1">
+      </a>
+      <a href="https://placebear.com/800/600" target="_blank">
+        <img src="https://placebear.com/300/200" alt="Image 2">
+      </a>
+      <a href="https://picsum.photos/800/600" target="_blank">
+        <img src="https://picsum.photos/300/200" alt="Image 3">
+      </a>
       <br><br>
-      <button onclick="logout()">🚪 Logout</button>
+      <button onclick="logout()">📥 Logout</button>
     `;
   }
 
@@ -47,7 +58,6 @@
     window.location.href = `${domain}/logout?client_id=${clientId}&logout_uri=${redirectUri}`;
   }
 
-  // --- OAuth flow ---
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
 
@@ -80,7 +90,7 @@
     });
 
   } else {
-    // Not logged in yet, redirect to login
+    // Redirect to Cognito login
     window.location.href = `${domain}/login?client_id=${clientId}&response_type=code&scope=openid+email+phone&redirect_uri=${redirectUri}`;
   }
 </script>

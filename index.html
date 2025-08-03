@@ -7,26 +7,24 @@
       const clientId = "7u4aik1atk0krdtfoc3cdoho1";
       const clientSecret = "vgs8upk2nrqjs4oon7t5kbgv1t9oi1b87dki4j03rckghti36d";
       const redirectUri = "https://main.d30ywk39l19qcq.amplifyapp.com";
+
       const code = new URLSearchParams(window.location.search).get("code");
 
       function showGallery() {
         document.body.innerHTML = `
           <h2>✅ Welcome to the Image Gallery!</h2>
           <div style="display: flex; gap: 10px;">
-            <img src="https://placekitten.com/200/200" onclick="openImage(this.src)" style="cursor:pointer;" />
-            <img src="https://placekitten.com/201/200" onclick="openImage(this.src)" style="cursor:pointer;" />
-            <img src="https://placekitten.com/202/200" onclick="openImage(this.src)" style="cursor:pointer;" />
+            <img src="https://placekitten.com/200/200" onclick="window.open(this.src)" style="cursor:pointer;" />
+            <img src="https://placekitten.com/201/200" onclick="window.open(this.src)" style="cursor:pointer;" />
+            <img src="https://placekitten.com/202/200" onclick="window.open(this.src)" style="cursor:pointer;" />
           </div>
-          <br><button onclick="logout()">🚪 Logout</button>
-          <script>
-            function openImage(src) {
-              window.open(src, '_blank');
-            }
-            function logout() {
-              window.location.href = "${domain}/logout?client_id=${clientId}&logout_uri=${redirectUri}";
-            }
-          </script>
+          <br>
+          <button onclick="logout()">🚪 Logout</button>
         `;
+      }
+
+      function logout() {
+        window.location.href = domain + "/logout?client_id=" + clientId + "&logout_uri=" + redirectUri;
       }
 
       if (code) {
@@ -49,11 +47,17 @@
             localStorage.setItem("id_token", data.id_token);
             showGallery();
           } else {
-            document.body.innerHTML = `<h2>❌ Failed to login</h2><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            document.body.innerHTML = `
+              <h2>❌ Failed to login</h2>
+              <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
           }
         })
         .catch(err => {
-          document.body.innerHTML = `<h2>❌ Error</h2><pre>${err.message}</pre>`;
+          document.body.innerHTML = `
+            <h2>❌ Error</h2>
+            <pre>${err.message}</pre>
+          `;
         });
       } else {
         // Redirect to Cognito login

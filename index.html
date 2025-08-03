@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cognito Login Redirect</title>
+    <script>
+      window.onload = () => {
+        const domain = "https://ap-southeast-1afuovmigj.auth.ap-southeast-1.amazoncognito.com";
+        const clientId = "7u4aik1atk0krdtfoc3cdoho1";
+        const redirectUri = "https://<AMPLIFY-URL>"; // Use placeholder now
+        const responseType = "code";
+        const scope = "openid+email+phone";
+
+        const loginUrl = `${domain}/login?client_id=${clientId}&response_type=${responseType}&scope=${scope}&redirect_uri=${redirectUri}`;
+        window.location.href = loginUrl;
+      };
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to Cognito login...</p>
+  </body>
+</html>
